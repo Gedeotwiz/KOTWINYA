@@ -1,0 +1,35 @@
+.product-chat-alt,
+.contact-web-chat,
+.team-web-chat {
+  border: 0;
+  background: transparent;
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.product-chat-alt {
+  margin-top: 9px;
+  padding: 0;
+}
+
+.contact-web-chat {
+  display: block;
+  margin-top: 12px;
+  padding: 0;
+}
+
+.team-web-chat {
+  display: block;
+  margin: 10px 0 0;
+  padding: 0;
+  text-align: left;
+}
+
+.contact-form .form-note {
+  display: block;
+  margin: 10px 0 0;
+}

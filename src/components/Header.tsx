@@ -24,11 +24,53 @@ export default function Header() {
   }, []);
 
   const navLink = (id: string, label: string) => (
-    <a className={activeSection === id ? 'active' : undefined} href={`#${id}`} onClick={() => { setActiveSection(id); closeMenu(); }}>{label}</a>
+    <a
+      className={activeSection === id ? 'active' : undefined}
+      href={`#${id}`}
+      onClick={() => {
+        setActiveSection(id);
+        closeMenu();
+      }}
+    >
+      {label}
+    </a>
   );
 
-  return <>
-    <div className="topbar"><div className="container topbar-inner"><div className="topbar-contact"><a href="tel:+250783801966">↗ &nbsp;+250 783 801 966</a><a href="mailto:info@kotwinya.rw">✉ &nbsp;info@kotwinya.rw</a><span>◷ &nbsp;Mon–Sun: 9am–5pm</span></div><span className="location">⌖ &nbsp;Nyabiheke, Rwanda</span></div></div>
-    <header className="site-header"><div className="container nav-wrap"><a className="brand" href="#home" aria-label="KOTWINYA home" onClick={() => setActiveSection('home')}><span>KOTWINYA</span><small>COOPERATIVE</small></a><button className="menu-toggle" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><span></span><span></span><span></span></button><nav className={`main-nav${menuOpen ? ' open' : ''}`} aria-label="Main navigation">{navLink('home', 'Home')}{navLink('products', 'Products')}{navLink('about', 'Our story')}{navLink('team', 'Our team')}{navLink('contact', 'Contact')}</nav><a className="nav-cta" href="#products" onClick={() => setActiveSection('products')}>Shop our products <span>↗</span></a></div></header>
-  </>;
+  return (
+    <>
+      <div className="topbar">
+        <div className="container topbar-inner">
+          <div className="topbar-contact">
+            <a href="tel:+250783801966">↗ &nbsp;+250 783 801 966</a>
+            <a href="mailto:info@kotwinya.rw">✉ &nbsp;info@kotwinya.rw</a>
+            <span>◷ &nbsp;Mon–Sun: 9am–5pm</span>
+          </div>
+          <span className="location">⌖ &nbsp;Nyabiheke, Rwanda</span>
+        </div>
+      </div>
+      <header className="site-header">
+        <div className="container nav-wrap">
+          <a className="brand" href="#home" aria-label="KOTWINYA home" onClick={() => setActiveSection('home')}>
+            <span>KOTWINYA</span>
+            <small>COOPERATIVE</small>
+          </a>
+          <button className="menu-toggle" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <nav className={`main-nav${menuOpen ? ' open' : ''}`} aria-label="Main navigation">
+            {navLink('home', 'Home')}
+            {navLink('products', 'Products')}
+            {navLink('about', 'Our story')}
+            {navLink('team', 'Our team')}
+            {navLink('contact', 'Contact')}
+          </nav>
+          <a className="nav-cta" href="#products" onClick={() => setActiveSection('products')}>
+            Shop our products <span>↗</span>
+          </a>
+        </div>
+      </header>
+    </>
+  );
 }

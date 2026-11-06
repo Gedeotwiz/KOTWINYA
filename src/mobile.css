@@ -1,0 +1,79 @@
+/* Layout refinements for compact phone widths, including 500px screens. */
+@media (max-width: 520px) {
+  .container {
+    width: calc(100% - 32px);
+    max-width: 500px;
+  }
+
+  .product-card {
+    grid-template-columns: 1fr;
+  }
+
+  .product-image-wrap {
+    height: 178px;
+    min-height: 178px;
+  }
+
+  .product-body {
+    padding: 16px;
+  }
+
+  .product-body h3 {
+    font-size: 16px;
+  }
+
+  .product-body > p {
+    min-height: 0;
+    margin-bottom: 13px;
+  }
+
+  .product-price {
+    font-size: 17px;
+  }
+
+  .buy-button {
+    white-space: nowrap;
+    padding-inline: 11px;
+    font-size: 9px;
+  }
+
+  .team-card {
+    gap: 13px;
+  }
+
+  .team-phone {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .team-grid {
+    gap: 14px;
+  }
+
+  .team-card {
+    flex: 0 0 min(88%, 420px);
+    width: min(88%, 420px);
+    max-width: 420px;
+    padding: 24px 20px;
+  }
+
+  .team-avatar {
+    flex-basis: 104px;
+    width: 104px;
+    height: 104px;
+  }
+
+  .team-info {
+    width: 100%;
+  }
+
+  .team-contact {
+    margin-inline: auto;
+  }
+
+  .team-web-chat,
+  .team-phone {
+    margin-inline: auto;
+  }
+}
