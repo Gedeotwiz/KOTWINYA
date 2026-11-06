@@ -312,6 +312,7 @@ export default function App() {
             <div className="hero-visual">
               <div className="hero-image" role="img" aria-label="Natural soap and skincare products"></div>
               <div className="image-tag">
+
                 <span className="tag-icon">✳</span>
                 <span>
                   <strong>Made in Rwanda</strong>
