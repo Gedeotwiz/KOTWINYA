@@ -1,13 +1,13 @@
 import { useMemo, useState } from 'react';
 import { formatPrice, products, type Product, type ProductCategory } from '../data/products';
 import { requestLiveChat } from '../lib/liveChat';
-import { openLeaderWhatsApp } from '../lib/whatsapp';
+import { orderProductOnWhatsApp } from '../lib/whatsapp';
 
 type Filter = 'all' | ProductCategory;
 
 function ProductCard({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
-  const orderMessage = ['Hello KOTWINYA! I would like to order:', `Product: ${product.name} (${product.size})`, `Price: ${formatPrice(product.price * quantity)} RWF (${quantity} × ${formatPrice(product.price)} RWF)`, `Quantity: ${quantity}`, `Product image: ${product.image}`, 'Please let me know about payment and delivery.'].join('\n');
+  const orderMessage = ['Hello KOTWINYA! I would like to order:', `Product: ${product.name} (${product.size})`, `Price: ${formatPrice(product.price * quantity)} RWF (${quantity} × ${formatPrice(product.price)} RWF)`, `Quantity: ${quantity}`, 'Please let me know about payment and delivery.'].join('\n');
 
   return (
     <article className="product-card">
@@ -29,7 +29,7 @@ function ProductCard({ product }: { product: Product }) {
               <span className="sr-only">Quantity for {product.name}</span>
               <input type="number" min="1" max="99" value={quantity} onChange={(event) => setQuantity(Math.max(1, Math.min(99, Number.parseInt(event.target.value, 10) || 1)))} />
             </label>
-            <button className="buy-button" onClick={() => openLeaderWhatsApp(orderMessage)}>
+            <button className="buy-button" onClick={() => void orderProductOnWhatsApp(orderMessage, product.image, product.name)}>
               Buy on WhatsApp ↗
             </button>
           </div>

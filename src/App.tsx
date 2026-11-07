@@ -102,11 +102,11 @@ function ValuesSection() {
 function TeamSection() {
   const message = 'Hello KOTWINYA, I would like to speak with cooperative leader Twizerimana Gedeon. Could we arrange a convenient time?';
   const leaders = [
-    { id: 'gedeon', name: 'Twizerimana Gedeon', role: 'Head of digital market', isKnown: true },
-    { id: 'leader-2', name: 'Leader profile to add', role: 'Add leader role and details', isKnown: false },
-    { id: 'leader-3', name: 'Leader profile to add', role: 'Add leader role and details', isKnown: false },
-    { id: 'leader-4', name: 'Leader profile to add', role: 'Add leader role and details', isKnown: false },
-    { id: 'leader-5', name: 'Leader profile to add', role: 'Add leader role and details', isKnown: false },
+    { id: 'gedeon', name: 'Twizerimana Gedeon',phone:"+250783801966",image:"/images/gedeon.jpeg", role: 'Head of digital market', isKnown: true },
+    { id: 'leader-2', name: 'Leader profile to add', phone:"", image:"", role: 'Add leader role and details', isKnown: false },
+    { id: 'leader-3', name: 'Leader profile to add', phone:"", image:"", role: 'Add leader role and details', isKnown: false },
+    { id: 'leader-4', name: 'Leader profile to add', phone:"", image:"", role: 'Add leader role and details', isKnown: false },
+    { id: 'leader-5', name: 'Leader profile to add', phone:"", image:"", role: 'Add leader role and details', isKnown: false },
   ];
   const carouselRef = useRef<HTMLDivElement>(null);
   const scrollLeaders = (direction: -1 | 1) => {
@@ -134,14 +134,14 @@ function TeamSection() {
         <div className="team-grid" id="team-leader-list" ref={carouselRef} role="region" aria-roledescription="carousel" aria-label="Cooperative leaders" tabIndex={0}>
           {leaders.map((leader) => (
             <article className="team-card" key={leader.id}>
-              {leader.isKnown ? <img className="team-avatar" src="/images/gedeon.jpeg" alt={leader.name} /> : <div className="team-avatar team-avatar-placeholder" aria-hidden="true">+</div>}
+              {leader.isKnown ? <img className="team-avatar" src={leader.image} alt={leader.name} /> : <div className="team-avatar team-avatar-placeholder" aria-hidden="true">+</div>}
               <div className="team-info">
                 <span className="team-role">COOPERATIVE LEADER</span>
                 <h3>{leader.name}</h3>
                 <p>{leader.role}</p>
                 {leader.isKnown && <div className="flex flex-col gap-2 justify-center items-center">
                   <button className="button button-dark w-2/4 team-contact" onClick={() => openLeaderWhatsApp(message)}>Chat on WhatsApp <span>↗</span></button>
-                  <a className="team-phone" href="tel:+250783801966">+250 783 801 966</a>
+                  <a className="team-phone" href={`tel:${leader.phone}`}>{leader.phone}</a>
                 </div>}
               </div>
             </article>
