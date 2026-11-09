@@ -102,9 +102,9 @@ function ValuesSection() {
 function TeamSection() {
   const message = 'Hello KOTWINYA, I would like to speak with cooperative leader Twizerimana Gedeon. Could we arrange a convenient time?';
   const leaders = [
-    { id: 'gedeon', name: 'Twizerimana Gedeon',phone:"+250783801966",image:"/images/gedeon.jpeg", role: 'Head of digital market', isKnown: true },
-    { id: 'leader-2', name: 'Leader profile to add', phone:"", image:"", role: 'Add leader role and details', isKnown: false },
-    { id: 'leader-3', name: 'Leader profile to add', phone:"", image:"", role: 'Add leader role and details', isKnown: false },
+    { id: 'alliance', name: 'Umurungi Alliance',phone:"+250798529635",image:"/images/prese.jpeg", role: 'President of the Cooperative', isKnown: true },
+    { id: 'gedeon', name: 'Twizerimana Gedeon', phone:"+250783801966", image:"/images/gedeon.jpeg", role: 'Head of digital market', isKnown: true },
+    { id: 'rukundo', name: 'Mukabutera Rukundo', phone:"+250791143414", image:"/images/conta.jpeg", role: 'Finance Manager', isKnown: true },
     { id: 'leader-4', name: 'Leader profile to add', phone:"", image:"", role: 'Add leader role and details', isKnown: false },
     { id: 'leader-5', name: 'Leader profile to add', phone:"", image:"", role: 'Add leader role and details', isKnown: false },
   ];
