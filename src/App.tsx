@@ -3,6 +3,7 @@ import Header from './components/Header';
 import ProductCatalog from './components/ProductCatalog';
 import { CHAT_UNAVAILABLE_EVENT, requestLiveChat } from './lib/liveChat';
 import { KOTWINYA_WHATSAPP_GROUP, openLeaderWhatsApp } from './lib/whatsapp';
+import { LanguageProvider, useLanguage } from './i18n';
 
 function LiveChatNotice({ onClose }: { onClose: () => void }) {
   return (
@@ -22,6 +23,7 @@ function LiveChatNotice({ onClose }: { onClose: () => void }) {
 }
 
 function StorySection() {
+  const { t } = useLanguage();
   return (
     <section className="story-section" id="about">
       <div className="container story-grid">
@@ -29,36 +31,36 @@ function StorySection() {
           <div className="story-image" role="img" aria-label="KOTWINYA cooperative members at a community workshop"></div>
           <div className="photo-caption">
             <span>✳</span>
-            <span>Small batches. Shared success.</span>
+            <span>{t('Small batches. Shared success.')}</span>
           </div>
         </div>
         <div className="story-copy">
-          <span className="eyebrow">OUR STORY</span>
+          <span className="eyebrow">{t('OUR STORY')}</span>
           <h2>
-            A little care can
+            {t('A little care can')}
             <br />
-            <em>change a lot.</em>
+            <em>{t('change a lot.')}</em>
           </h2>
-          <p className="story-lead">KOTWINYA is a community cooperative creating quality soaps and home care products while opening doors to skills, confidence, and income.</p>
-          <p>Based in Nyabiheke, our members learn by making. Together we turn practical skills into products families can trust and opportunities that reach beyond our workshop.</p>
-          <blockquote>“When our community grows, we all grow.”</blockquote>
+          <p className="story-lead">{t('KOTWINYA is a community cooperative creating quality soaps and home care products while opening doors to skills, confidence, and income.')}</p>
+          <p>{t('Based in Nyabiheke, our members learn by making. Together we turn practical skills into products families can trust and opportunities that reach beyond our workshop.')}</p>
+          <blockquote>{t('“When our community grows, we all grow.”')}</blockquote>
           <a className="button button-dark" href="#contact">
-            Meet the cooperative <span>→</span>
+            {t('Meet the cooperative')} <span>→</span>
           </a>
           <div className="story-stats">
             <div>
               <strong>
                 100<span>%</span>
               </strong>
-              <small>community led</small>
+              <small>{t('community led')}</small>
             </div>
             <div>
-              <strong>Made</strong>
-              <small>with care in Rwanda</small>
+              <strong>{t('Made')}</strong>
+              <small>{t('with care in Rwanda')}</small>
             </div>
             <div>
               <strong>One</strong>
-              <small>purchase makes a difference</small>
+              <small>{t('purchase makes a difference')}</small>
             </div>
           </div>
         </div>
@@ -68,30 +70,31 @@ function StorySection() {
 }
 
 function ValuesSection() {
+  const { t } = useLanguage();
   return (
     <section className="values-section section-pad">
       <div className="container">
         <div className="center-heading">
-          <span className="eyebrow">A BETTER KIND OF EVERYDAY</span>
+          <span className="eyebrow">{t('A BETTER KIND OF EVERYDAY')}</span>
           <h2>
-            Care with a <em>purpose.</em>
+            {t('Care with a')} <em>{t('purpose.')}</em>
           </h2>
         </div>
         <div className="values-grid">
           <article className="value-card">
             <span className="value-icon green">✺</span>
-            <h3>Thoughtful ingredients</h3>
-            <p>Made with care for the routines and spaces that matter to you.</p>
+            <h3>{t('Thoughtful ingredients')}</h3>
+            <p>{t('Made with care for the routines and spaces that matter to you.')}</p>
           </article>
           <article className="value-card">
             <span className="value-icon blue">✳</span>
-            <h3>Shared opportunity</h3>
-            <p>Your purchase helps local members build skills and steady income.</p>
+            <h3>{t('Shared opportunity')}</h3>
+            <p>{t('Your purchase helps local members build skills and steady income.')}</p>
           </article>
           <article className="value-card">
             <span className="value-icon yellow">✦</span>
-            <h3>Made close to home</h3>
-            <p>Produced in Nyabiheke and delivered across Rwanda.</p>
+            <h3>{t('Made close to home')}</h3>
+            <p>{t('Produced in Nyabiheke and delivered across Rwanda.')}</p>
           </article>
         </div>
       </div>
@@ -100,6 +103,7 @@ function ValuesSection() {
 }
 
 function TeamSection() {
+  const { t } = useLanguage();
   const message = 'Hello KOTWINYA, I would like to speak with cooperative leader Twizerimana Gedeon. Could we arrange a convenient time?';
   const leaders = [
     { id: 'alliance', name: 'Umurungi Alliance',phone:"+250798529635",image:"/images/prese.jpeg", role: 'President of the Cooperative', isKnown: true },
@@ -121,11 +125,11 @@ function TeamSection() {
     <section className="team-section section-pad" id="team">
       <div className="container relative">
         <div className="center-heading">
-          <span className="eyebrow">MEET THE PEOPLE BEHIND KOTWINYA</span>
+          <span className="eyebrow">{t('MEET THE PEOPLE BEHIND KOTWINYA')}</span>
           <h2>
-            Talk with our <em>team.</em>
+            {t('Talk with our')} <em>{t('team.')}</em>
           </h2>
-          <p className="team-intro">Reach out to our cooperative lead with questions, ideas, or to arrange a time to talk.</p>
+          <p className="team-intro">{t('Reach out to our cooperative lead with questions, ideas, or to arrange a time to talk.')}</p>
         </div>
         <div className="team-carousel-controls absolute left-1/2 top-3/3" aria-label="Team carousel controls">
           <button type="button" onClick={() => scrollLeaders(-1)} aria-label="Scroll team leaders left">←</button>
@@ -136,11 +140,11 @@ function TeamSection() {
             <article className="team-card" key={leader.id}>
               {leader.isKnown ? <img className="team-avatar" src={leader.image} alt={leader.name} /> : <div className="team-avatar team-avatar-placeholder" aria-hidden="true">+</div>}
               <div className="team-info">
-                <span className="team-role">COOPERATIVE LEADER</span>
+                <span className="team-role">{t('COOPERATIVE LEADER')}</span>
                 <h3>{leader.name}</h3>
-                <p>{leader.role}</p>
+                <p>{t(leader.role)}</p>
                 {leader.isKnown && <div className="flex flex-col gap-2 justify-center items-center">
-                  <button className="button button-dark team-contact" onClick={() => openLeaderWhatsApp(message)}>Chat on WhatsApp <span>↗</span></button>
+                  <button className="button button-dark team-contact" onClick={() => openLeaderWhatsApp(message)}>{t('Chat on WhatsApp')} <span>↗</span></button>
                   <a className="team-phone" href={`tel:${leader.phone}`}>{leader.phone}</a>
                 </div>}
               </div>
@@ -153,6 +157,7 @@ function TeamSection() {
 }
 
 function ContactSection() {
+  const { t } = useLanguage();
   const submitContact = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -164,59 +169,59 @@ function ContactSection() {
     <section className="contact-section section-pad" id="contact">
       <div className="container contact-grid">
         <div className="contact-copy">
-          <span className="eyebrow">WE'D LOVE TO HEAR FROM YOU</span>
+          <span className="eyebrow">{t("WE'D LOVE TO HEAR FROM YOU")}</span>
           <h2>
-            Let's talk
+            {t("Let's talk")}
             <br />
-            <em>good things.</em>
+            <em>{t('good things.')}</em>
           </h2>
-          <p>Questions about an order, wholesale, or the cooperative? Send us a message and our team will get back to you.</p>
+          <p>{t('Questions about an order, wholesale, or the cooperative? Send us a message and our team will get back to you.')}</p>
           <div className="contact-detail">
             <span className="detail-icon">↗</span>
             <div>
-              <small>CALL OR WHATSAPP</small>
+              <small>{t('CALL OR WHATSAPP')}</small>
               <a href="tel:+250783801966">+250 783 801 966</a>
             </div>
           </div>
           <div className="contact-detail">
             <span className="detail-icon">✉</span>
             <div>
-              <small>EMAIL US</small>
+              <small>{t('EMAIL US')}</small>
               <a href="mailto:info@kotwinya.rw">info@kotwinya.rw</a>
             </div>
           </div>
           <div className="contact-detail">
             <span className="detail-icon">⌖</span>
             <div>
-              <small>FIND US</small>
+              <small>{t('FIND US')}</small>
               <span>Nyabiheke, Rwanda</span>
             </div>
           </div>
         </div>
         <form className="contact-form" onSubmit={submitContact}>
-          <span className="eyebrow">SEND A MESSAGE</span>
-          <h3>Message our team</h3>
+          <span className="eyebrow">{t('SEND A MESSAGE')}</span>
+          <h3>{t('Message our team')}</h3>
           <div className="form-row">
             <label>
-              Your name
+              {t('Your name')}
               <input name="name" autoComplete="name" required placeholder="e.g. Aline Mukamana" />
             </label>
             <label>
-              Email address
+              {t('Email address')}
               <input type="email" name="email" autoComplete="email" required placeholder="you@example.com" />
             </label>
           </div>
           <label>
-            Your message
-            <textarea name="message" required rows={4} placeholder="Tell us what you're looking for..." />
+            {t('Your message')}
+            <textarea name="message" required rows={4} placeholder={t("Tell us what you're looking for...")} />
           </label>
           <button className="button button-primary" type="submit">
-            Continue in WhatsApp <span>↗</span>
+            {t('Continue in WhatsApp')} <span>↗</span>
           </button>
           <button className="contact-web-chat" type="button" onClick={() => requestLiveChat('Hello KOTWINYA, I would like help with an order or have a question.')}>
-            I don’t use WhatsApp — chat here
+            {t('I don’t use WhatsApp — chat here')}
           </button>
-          <small className="form-note">WhatsApp opens a direct message to the cooperative lead. Website chat is also available.</small>
+          <small className="form-note">{t('WhatsApp opens a direct message to the cooperative lead. Website chat is also available.')}</small>
         </form>
       </div>
     </section>
@@ -224,6 +229,7 @@ function ContactSection() {
 }
 
 function Footer() {
+  const { t } = useLanguage();
   return (
     <footer className="footer">
       <div className="container footer-main">
@@ -233,23 +239,23 @@ function Footer() {
             <small>COOPERATIVE</small>
           </a>
           <p>
-            Everyday care, made with purpose.
-            <br />A cooperative rooted in community.
+            {t('Everyday care, made with purpose.')}
+            <br />{t('A cooperative rooted in community.')}
           </p>
         </div>
         <div className="footer-links">
-          <strong>Explore</strong>
-          <a href="#about">Our story</a>
-          <a href="#products">Products</a>
-          <a href="#contact">Contact us</a>
+          <strong>{t('Explore')}</strong>
+          <a href="#about">{t('Our story')}</a>
+          <a href="#products">{t('Products')}</a>
+          <a href="#contact">{t('Contact us')}</a>
         </div>
         <div className="footer-links">
-          <strong>Say hello</strong>
+          <strong>{t('Say hello')}</strong>
           <a href="tel:+250783801966">+250 783 801 966</a>
           <a href="mailto:info@kotwinya.rw">info@kotwinya.rw</a>
-          <button onClick={() => requestLiveChat('Hello KOTWINYA, I have a question.')}>Website live chat</button>
+          <button onClick={() => requestLiveChat('Hello KOTWINYA, I have a question.')}>{t('Website live chat')}</button>
           <a href={`https://wa.me/250783801966?text=${encodeURIComponent('Hello KOTWINYA, I have a question.')}`} target="_blank" rel="noreferrer">
-            WhatsApp the leader ↗
+            {t('WhatsApp the leader ↗')}
           </a>
         </div>
         <a className="back-top" href="#home" aria-label="Back to top">
@@ -257,14 +263,15 @@ function Footer() {
         </a>
       </div>
       <div className="container footer-bottom">
-        <span>© {new Date().getFullYear()} KOTWINYA Cooperative. Made with care in Rwanda.</span>
-        <span>Community is at the heart of everything.</span>
+        <span>© {new Date().getFullYear()} {t('KOTWINYA Cooperative. Made with care in Rwanda.')}</span>
+        <span>{t('Community is at the heart of everything.')}</span>
       </div>
     </footer>
   );
 }
 
-export default function App() {
+function AppContent() {
+  const { t } = useLanguage();
   const [showChatNotice, setShowChatNotice] = useState(false);
 
   useEffect(() => {
@@ -281,20 +288,20 @@ export default function App() {
           <div className="container hero-grid">
             <div className="hero-copy">
               <span className="eyebrow">
-                <i></i> GOOD FOR YOU. GOOD FOR COMMUNITY.
+                <i></i> {t('GOOD FOR YOU. GOOD FOR COMMUNITY.')}
               </span>
               <h1>
-                Everyday care,
+                {t('Everyday care,')}
                 <br />
-                <em>made with purpose.</em>
+                <em>{t('made with purpose.')}</em>
               </h1>
-              <p>Thoughtful soaps and home care, made by our cooperative in Rwanda. Every purchase helps local women and youth build a livelihood.</p>
+              <p>{t('Thoughtful soaps and home care, made by our cooperative in Rwanda. Every purchase helps local women and youth build a livelihood.')}</p>
               <div className="hero-actions">
                 <a className="button button-primary" href="#products">
-                  Explore products <span>→</span>
+                  {t('Explore products')} <span>→</span>
                 </a>
                 <a className="text-link" href="#about">
-                  Get to know us <span>↗</span>
+                  {t('Get to know us')} <span>↗</span>
                 </a>
               </div>
               <div className="hero-note">
@@ -304,8 +311,8 @@ export default function App() {
                   <span>✦</span>
                 </div>
                 <span>
-                  <strong>Locally made, community led</strong>
-                  <small>Care that goes beyond clean</small>
+                  <strong>{t('Locally made, community led')}</strong>
+                  <small>{t('Care that goes beyond clean')}</small>
                 </span>
               </div>
             </div>
@@ -315,8 +322,8 @@ export default function App() {
 
                 <span className="tag-icon">✳</span>
                 <span>
-                  <strong>Made in Rwanda</strong>
-                  <small>with care, by hand</small>
+                  <strong>{t('Made in Rwanda')}</strong>
+                  <small>{t('with care, by hand')}</small>
                 </span>
               </div>
               <div className="hero-stamp">
@@ -333,25 +340,25 @@ export default function App() {
           </div>
           <div className="hero-bottom container">
             <span>
-              <b>01</b> Nature inspired
+              <b>01</b> {t('Nature inspired')}
             </span>
             <span>
-              <b>02</b> Community powered
+              <b>02</b> {t('Community powered')}
             </span>
             <span>
-              <b>03</b> Proudly Rwandan
+              <b>03</b> {t('Proudly Rwandan')}
             </span>
           </div>
         </section>
         <section className="ticker" aria-label="Our values">
           <div className="container ticker-inner">
-            <span>✳ &nbsp;NATURAL INGREDIENTS</span>
+            <span>✳ &nbsp;{t('NATURAL INGREDIENTS')}</span>
             <i>•</i>
-            <span>COMMUNITY EMPOWERMENT</span>
+            <span>{t('COMMUNITY EMPOWERMENT')}</span>
             <i>•</i>
-            <span>PROUDLY MADE IN RWANDA</span>
+            <span>{t('PROUDLY MADE IN RWANDA')}</span>
             <i>•</i>
-            <span>DELIVERY ACROSS RWANDA</span>
+            <span>{t('DELIVERY ACROSS RWANDA')}</span>
           </div>
         </section>
         <ProductCatalog />
@@ -361,17 +368,17 @@ export default function App() {
         <section className="community-cta">
           <div className="container community-inner">
             <div>
-              <span className="eyebrow">LET'S STAY CONNECTED</span>
+              <span className="eyebrow">{t("LET'S STAY CONNECTED")}</span>
               <h2>
-                Good things grow
+                {t('Good things grow')}
                 <br />
-                when we <em>share.</em>
+                {t('when we')} <em>{t('share.')}</em>
               </h2>
             </div>
             <div>
-              <p>Join our cooperative WhatsApp group for product updates and community news.</p>
+              <p>{t('Join our cooperative WhatsApp group for product updates and community news.')}</p>
               <a className="button button-light" href={KOTWINYA_WHATSAPP_GROUP} target="_blank" rel="noreferrer">
-                Join WhatsApp group <span>↗</span>
+                {t('Join WhatsApp group')} <span>↗</span>
               </a>
             </div>
             <span className="community-flower" aria-hidden="true">
@@ -385,4 +392,8 @@ export default function App() {
       {showChatNotice && <LiveChatNotice onClose={() => setShowChatNotice(false)} />}
     </>
   );
+}
+
+export default function App() {
+  return <LanguageProvider><AppContent /></LanguageProvider>;
 }

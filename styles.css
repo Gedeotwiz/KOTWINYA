@@ -142,6 +142,33 @@ textarea {
   margin-left: 8px;
 }
 
+@media (max-width: 1024px) {
+  .nav-cta {
+    display: none;
+  }
+}
+
+.language-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #31474a;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.language-picker select  {
+  max-width: 80px;
+  border:none;
+  outline: none;
+  border-radius: 20px;
+  padding: 8px 10px;
+  color: var(--blue);
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
 .menu-toggle {
   display: none;
   background: none;

@@ -2,10 +2,12 @@ import { useMemo, useState } from 'react';
 import { formatPrice, products, type Product, type ProductCategory } from '../data/products';
 import { requestLiveChat } from '../lib/liveChat';
 import { orderProductOnWhatsApp } from '../lib/whatsapp';
+import { useLanguage } from '../i18n';
 
 type Filter = 'all' | ProductCategory;
 
 function ProductCard({ product }: { product: Product }) {
+  const { t } = useLanguage();
   const [quantity, setQuantity] = useState(1);
   const orderMessage = ['Hello KOTWINYA! I would like to order:', `Product: ${product.name} (${product.size})`, `Price: ${formatPrice(product.price * quantity)} RWF (${quantity} × ${formatPrice(product.price)} RWF)`, `Quantity: ${quantity}`, 'Please let me know about payment and delivery.'].join('\n');
 
@@ -30,12 +32,12 @@ function ProductCard({ product }: { product: Product }) {
               <input type="number" min="1" max="99" value={quantity} onChange={(event) => setQuantity(Math.max(1, Math.min(99, Number.parseInt(event.target.value, 10) || 1)))} />
             </label>
             <button className="buy-button" onClick={() => void orderProductOnWhatsApp(orderMessage, product.image, product.name)}>
-              Buy on WhatsApp ↗
+              {t('Buy on WhatsApp ↗')}
             </button>
           </div>
         </div>
         <button className="product-chat-alt" onClick={() => requestLiveChat(orderMessage, ['product-order'])}>
-          No WhatsApp? Ask in website chat
+          {t('No WhatsApp? Ask in website chat')}
         </button>
       </div>
     </article>
@@ -43,6 +45,7 @@ function ProductCard({ product }: { product: Product }) {
 }
 
 export default function ProductCatalog() {
+  const { t } = useLanguage();
   const [category, setCategory] = useState<Filter>('all');
   const [search, setSearch] = useState('');
   const visibleProducts = useMemo(
@@ -56,9 +59,9 @@ export default function ProductCatalog() {
   );
 
   const filters: { label: string; value: Filter }[] = [
-    { label: 'All products', value: 'all' },
-    { label: 'Soaps', value: 'soap' },
-    { label: 'Home care', value: 'home-care' },
+    { label: t('All products'), value: 'all' },
+    { label: t('Soaps'), value: 'soap' },
+    { label: t('Home care'), value: 'home-care' },
   ];
 
   return (
@@ -66,14 +69,14 @@ export default function ProductCatalog() {
       <div className="container">
         <div className="section-heading">
           <div>
-            <span className="eyebrow">CARE FOR EVERYDAY</span>
+            <span className="eyebrow">{t('CARE FOR EVERYDAY')}</span>
             <h2>
-              Made for your home.
+              {t('Made for your home.')}
               <br />
-              <em>Rooted in our community.</em>
+              <em>{t('Rooted in our community.')}</em>
             </h2>
           </div>
-          <p>Simple, dependable essentials crafted with care. Find the right fit for your daily routine.</p>
+          <p>{t('Simple, dependable essentials crafted with care. Find the right fit for your daily routine.')}</p>
         </div>
         <div className="catalog-tools">
           <div className="filters" role="group" aria-label="Filter products by category">
@@ -85,7 +88,7 @@ export default function ProductCatalog() {
           </div>
           <label className="search-box">
             <span>⌕</span>
-            <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search products" aria-label="Search products" />
+            <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t('Search products')} aria-label={t('Search products')} />
             <kbd>/</kbd>
           </label>
         </div>

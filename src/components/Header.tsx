@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useEffect } from 'react';
+import { useLanguage, type Language } from '../i18n';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const { language, setLanguage, t } = useLanguage();
   const closeMenu = () => setMenuOpen(false);
 
   useEffect(() => {
@@ -60,15 +62,22 @@ export default function Header() {
             <span></span>
           </button>
           <nav className={`main-nav${menuOpen ? ' open' : ''}`} aria-label="Main navigation">
-            {navLink('home', 'Home')}
-            {navLink('products', 'Products')}
-            {navLink('about', 'Our story')}
-            {navLink('team', 'Our team')}
-            {navLink('contact', 'Contact')}
+            {navLink('home', t('Home'))}
+            {navLink('products', t('Products'))}
+            {navLink('about', t('Our story'))}
+            {navLink('team', t('Our team'))}
+            {navLink('contact', t('Contact'))}
           </nav>
           <a className="nav-cta" href="#products" onClick={() => setActiveSection('products')}>
-            Shop our products <span>↗</span>
+            {t('Shop our products')} <span>↗</span>
           </a>
+          <label className="language-picker">
+              <select aria-label={t('Language')} value={language} onChange={(event) => setLanguage(event.target.value as Language)}>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+                <option value="rw">Kinyarwanda</option>
+              </select>
+           </label>
         </div>
       </header>
     </>
