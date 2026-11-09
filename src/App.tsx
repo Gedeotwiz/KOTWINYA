@@ -140,7 +140,7 @@ function TeamSection() {
                 <h3>{leader.name}</h3>
                 <p>{leader.role}</p>
                 {leader.isKnown && <div className="flex flex-col gap-2 justify-center items-center">
-                  <button className="button button-dark w-2/4 team-contact" onClick={() => openLeaderWhatsApp(message)}>Chat on WhatsApp <span>↗</span></button>
+                  <button className="button button-dark team-contact" onClick={() => openLeaderWhatsApp(message)}>Chat on WhatsApp <span>↗</span></button>
                   <a className="team-phone" href={`tel:${leader.phone}`}>{leader.phone}</a>
                 </div>}
               </div>

@@ -1645,9 +1645,6 @@ textarea {
 @media (max-width: 680px) {
   .team-card {
     flex-basis: calc((100% - 22px) / 2);
-  }
-
-  .team-card {
     min-height: auto;
   }
 
