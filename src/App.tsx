@@ -24,14 +24,31 @@ function LiveChatNotice({ onClose }: { onClose: () => void }) {
 
 function StorySection() {
   const { t } = useLanguage();
+  const [storyImageIndex, setStoryImageIndex] = useState(0);
+  const storyImages = ['/images/stories.jpeg', '/images/story1.jpeg', '/images/story2.jpeg', '/images/story3.jpeg'];
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setStoryImageIndex((index) => (index + 1) % storyImages.length), 5000);
+    return () => window.clearInterval(timer);
+  }, [storyImages.length]);
+
+  const showStoryImage = (index: number) => setStoryImageIndex((index + storyImages.length) % storyImages.length);
+
   return (
     <section className="story-section" id="about">
       <div className="container story-grid">
         <div className="story-photo">
-          <div className="story-image" role="img" aria-label="KOTWINYA cooperative members at a community workshop"></div>
+          <div className="story-image" role="img" aria-label={`KOTWINYA cooperative photo ${storyImageIndex + 1} of ${storyImages.length}`} style={{ backgroundImage: `linear-gradient(0deg, #102f3533, transparent 45%), url('${storyImages[storyImageIndex]}')` }}></div>
           <div className="photo-caption">
             <span>✳</span>
             <span>{t('Small batches. Shared success.')}</span>
+          </div>
+          <div className="story-slide-controls" role="group" aria-label="Story photo controls">
+            <button type="button" aria-label="Previous story photo" onClick={() => showStoryImage(storyImageIndex - 1)}>‹</button>
+            {storyImages.map((image, index) => (
+              <button key={image} type="button" className={index === storyImageIndex ? 'active' : undefined} aria-label={`Show story photo ${index + 1}`} aria-current={index === storyImageIndex ? 'true' : undefined} onClick={() => showStoryImage(index)} />
+            ))}
+            <button type="button" aria-label="Next story photo" onClick={() => showStoryImage(storyImageIndex + 1)}>›</button>
           </div>
         </div>
         <div className="story-copy">

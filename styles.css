@@ -679,9 +679,10 @@ textarea {
 .story-image {
   height: 430px;
   border-radius: 12px;
-  background:
-    linear-gradient(0deg, #102f3533, transparent 45%),
-    url('/images/stories.jpeg') center/cover;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition: background-image 0.35s ease;
 }
 
 .photo-caption {
@@ -699,6 +700,46 @@ textarea {
 .photo-caption span:first-child {
   font-size: 20px;
   color: var(--yellow);
+}
+
+.story-slide-controls {
+  position: absolute;
+  right: 16px;
+  bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.story-slide-controls button {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  border: 1px solid #ffffffa8;
+  border-radius: 50%;
+  color: #fff;
+  background: #102f3566;
+  cursor: pointer;
+  font: inherit;
+  font-size: 16px;
+}
+
+.story-slide-controls button[aria-label^='Show story photo'] {
+  width: 8px;
+  height: 8px;
+  border: 0;
+  background: #ffffff9c;
+}
+
+.story-slide-controls button.active,
+.story-slide-controls button:hover {
+  background: var(--blue);
+}
+
+.story-slide-controls button[aria-label^='Show story photo'].active {
+  background: #fff;
 }
 
 .story-copy h2 {
