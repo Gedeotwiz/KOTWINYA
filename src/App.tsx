@@ -4,6 +4,7 @@ import ProductCatalog from './components/ProductCatalog';
 import { CHAT_UNAVAILABLE_EVENT, requestLiveChat } from './lib/liveChat';
 import { KOTWINYA_WHATSAPP_GROUP, openLeaderWhatsApp } from './lib/whatsapp';
 import { LanguageProvider, useLanguage } from './i18n';
+import Dashboard from './components/Dashboard';
 
 function LiveChatNotice({ onClose }: { onClose: () => void }) {
   return (
@@ -265,6 +266,7 @@ function Footer() {
           <a href="#about">{t('Our story')}</a>
           <a href="#products">{t('Products')}</a>
           <a href="#contact">{t('Contact us')}</a>
+          <a href="/dashboard">{t('Project dashboard')}</a>
         </div>
         <div className="footer-links">
           <strong>{t('Say hello')}</strong>
@@ -412,5 +414,6 @@ function AppContent() {
 }
 
 export default function App() {
-  return <LanguageProvider><AppContent /></LanguageProvider>;
+  const isDashboard = window.location.pathname.replace(/\/$/, '') === '/dashboard';
+  return <LanguageProvider>{isDashboard ? <Dashboard /> : <AppContent />}</LanguageProvider>;
 }
