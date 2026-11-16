@@ -1,9 +1,10 @@
-import { useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { products, formatPrice, type Product } from '../data/products';
+import { api, type CooperativeTask, type TeamMember } from '../lib/api';
 import '../dashboard.css';
 
-type Leader = { id: string; name: string; role: string; phone: string; email: string; status: 'Active' | 'Invited' };
-type Task = { id: number; title: string; owner: string; due: string; done: boolean; group: string };
+type Leader = TeamMember;
+type Task = CooperativeTask;
 type Section = 'Overview' | 'Products' | 'Team' | 'Tasks' | 'Inventory';
 type ManagedProduct = Product & { stock: number };
 const seedLeaders: Leader[] = [
@@ -17,42 +18,55 @@ const seedTasks: Task[] = [
   { id: 3, title: 'Reconcile October cooperative expenses', owner: 'Mukabutera Rukundo', due: 'Nov 14', done: false, group: 'Finance' },
   { id: 4, title: 'Order bottles and packaging labels', owner: 'Umurungi Alliance', due: 'Nov 16', done: true, group: 'Production' },
 ];
-const readStore = <T,>(key: string, fallback: T): T => {
-  try { const value = localStorage.getItem(`kotwinya-dashboard-${key}`); return value ? JSON.parse(value) as T : fallback; } catch { return fallback; }
-};
-const saveStore = <T,>(key: string, value: T) => localStorage.setItem(`kotwinya-dashboard-${key}`, JSON.stringify(value));
-
 function Dashboard() {
   const [section, setSection] = useState<Section>('Overview');
-  const [items, setItems] = useState<ManagedProduct[]>(() => readStore<ManagedProduct[]>('products', products.map((product, index) => ({ ...product, stock: [24, 8, 16, 6, 12, 18][index] ?? 0 })).map((product) => ({ ...product, stock: product.stock ?? 0 }))));
-  const [leaders, setLeaders] = useState<Leader[]>(() => readStore('leaders', seedLeaders));
-  const [tasks, setTasks] = useState<Task[]>(() => readStore('tasks', seedTasks));
+  const [items, setItems] = useState<ManagedProduct[]>(products.map((product, index) => ({ ...product, stock: [24, 8, 16, 6, 12, 18][index] ?? 0 })));
+  const [leaders, setLeaders] = useState<Leader[]>(seedLeaders);
+  const [tasks, setTasks] = useState<Task[]>(seedTasks);
   const [query, setQuery] = useState('');
   const [modal, setModal] = useState<'product' | 'leader' | 'task' | null>(null);
   const [notice, setNotice] = useState('');
   const [mobileMenu, setMobileMenu] = useState(false);
-  const updateItems = (next: ManagedProduct[]) => { setItems(next); saveStore('products', next); };
-  const updateLeaders = (next: Leader[]) => { setLeaders(next); saveStore('leaders', next); };
-  const updateTasks = (next: Task[]) => { setTasks(next); saveStore('tasks', next); };
+  const updateItems = (next: ManagedProduct[]) => setItems(next);
+  const updateLeaders = (next: Leader[]) => setLeaders(next);
+  const updateTasks = (next: Task[]) => setTasks(next);
+
+  useEffect(() => {
+    Promise.all([api.products(), api.team(), api.tasks()]).then(([productData, teamData, taskData]) => {
+      setItems(productData.map((product) => ({ ...product, stock: Number((product as ManagedProduct).stock ?? 0) })));
+      setLeaders(teamData);
+      setTasks(taskData);
+    }).catch((error: Error) => setNotice(`Could not connect to the KOTWINYA API: ${error.message}. Start the server to load and save dashboard changes.`));
+  }, []);
   const filteredProducts = useMemo(() => items.filter((product) => product.name.toLowerCase().includes(query.toLowerCase())), [items, query]);
   const completedTasks = tasks.filter((task) => task.done).length;
   const lowStock = items.filter((product) => product.stock < 10).length;
-  const saveProduct = (event: FormEvent<HTMLFormElement>) => {
+  const saveProduct = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); const data = new FormData(event.currentTarget);
-    const product: ManagedProduct = { id: `product-${Date.now()}`, name: String(data.get('name')), category: data.get('category') as Product['category'], size: String(data.get('size')), description: String(data.get('description')), price: Number(data.get('price')), image: String(data.get('image') || '/images/liquid.jpg'), alt: String(data.get('name')), stock: Number(data.get('stock') || 0) };
-    updateItems([...items, product]); setModal(null); setNotice(`${product.name} added to the product list.`);
+    try {
+      const product = await api.createProduct({ name: String(data.get('name')), category: data.get('category') as Product['category'], size: String(data.get('size')), description: String(data.get('description')), price: Number(data.get('price')), image: String(data.get('image') || '/images/liquid.jpg'), alt: String(data.get('name')), stock: Number(data.get('stock') || 0) });
+      updateItems([...items, product]); setModal(null); setNotice(`${product.name} added to the product list.`);
+    } catch (error) { setNotice(error instanceof Error ? error.message : 'Could not save product.'); }
   };
-  const saveLeader = (event: FormEvent<HTMLFormElement>) => {
+  const saveLeader = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); const data = new FormData(event.currentTarget);
-    const leader: Leader = { id: `leader-${Date.now()}`, name: String(data.get('name')), role: String(data.get('role')), phone: String(data.get('phone')), email: String(data.get('email')), status: 'Invited' };
-    updateLeaders([...leaders, leader]); setModal(null); setNotice(`${leader.name} added to the team.`);
+    try {
+      const leader = await api.createTeamMember({ name: String(data.get('name')), role: String(data.get('role')), phone: String(data.get('phone')), email: String(data.get('email')) });
+      updateLeaders([...leaders, leader]); setModal(null); setNotice(`${leader.name} added to the team.`);
+    } catch (error) { setNotice(error instanceof Error ? error.message : 'Could not add team member.'); }
   };
-  const saveTask = (event: FormEvent<HTMLFormElement>) => {
+  const saveTask = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); const data = new FormData(event.currentTarget);
-    updateTasks([...tasks, { id: Date.now(), title: String(data.get('title')), owner: String(data.get('owner')), due: String(data.get('due')), done: false, group: String(data.get('group')) }]); setModal(null); setNotice('Task added to the team board.');
+    try {
+      const task = await api.createTask({ title: String(data.get('title')), owner: String(data.get('owner')), due: String(data.get('due')), group: String(data.get('group')) });
+      updateTasks([...tasks, task]); setModal(null); setNotice('Task added to the team board.');
+    } catch (error) { setNotice(error instanceof Error ? error.message : 'Could not create task.'); }
   };
-  const removeProduct = (id: string) => { const product = items.find((entry) => entry.id === id); updateItems(items.filter((entry) => entry.id !== id)); setNotice(`${product?.name ?? 'Product'} removed.`); };
-  const toggleTask = (id: number) => updateTasks(tasks.map((task) => task.id === id ? { ...task, done: !task.done } : task));
+  const removeProduct = async (id: string) => { const product = items.find((entry) => entry.id === id); try { await api.deleteProduct(id); updateItems(items.filter((entry) => entry.id !== id)); setNotice(`${product?.name ?? 'Product'} removed.`); } catch (error) { setNotice(error instanceof Error ? error.message : 'Could not remove product.'); } };
+  const toggleTask = async (id: string | number) => { const task = tasks.find((entry) => entry.id === id); if (!task) return; try { const updated = await api.updateTask(id, { done: !task.done }); updateTasks(tasks.map((entry) => entry.id === id ? updated : entry)); } catch (error) { setNotice(error instanceof Error ? error.message : 'Could not update task.'); } };
+  const changeStock = async (id: string, amount: number) => { const product = items.find((entry) => entry.id === id); if (!product) return; const stock = Math.max(0, product.stock + amount); try { await api.updateProduct(id, { stock }); updateItems(items.map((entry) => entry.id === id ? { ...entry, stock } : entry)); } catch (error) { setNotice(error instanceof Error ? error.message : 'Could not update stock.'); } };
+  const removeLeader = async (id: string) => { const leader = leaders.find((entry) => entry.id === id); if (!leader) return; try { await api.deleteTeamMember(id); updateLeaders(leaders.filter((entry) => entry.id !== id)); setNotice(`${leader.name} removed from the team.`); } catch (error) { setNotice(error instanceof Error ? error.message : 'Could not remove team member.'); } };
+  const removeTask = async (id: string | number) => { try { await api.deleteTask(id); updateTasks(tasks.filter((entry) => entry.id !== id)); } catch (error) { setNotice(error instanceof Error ? error.message : 'Could not delete task.'); } };
   const nav: Section[] = ['Overview', 'Products', 'Team', 'Tasks', 'Inventory'];
 
   return <div className="dash-shell">
@@ -73,9 +87,9 @@ function Dashboard() {
         <section className="panel product-panel"><div className="panel-heading"><div><h2>Product catalogue</h2><p>Your cooperative’s products and current prices.</p></div><button className="subtle-button" onClick={() => setSection('Products')}>Manage products <span>→</span></button></div><ProductTable entries={items.slice(0, 4)} onRemove={removeProduct} /></section>
       </>}
       {section === 'Products' && <section className="panel full-panel"><div className="table-tools"><label className="search-box"><span>⌕</span><input placeholder="Search products..." value={query} onChange={(event) => setQuery(event.target.value)} /></label><span className="result-count">{filteredProducts.length} products</span></div><ProductTable entries={filteredProducts} onRemove={removeProduct} /></section>}
-      {section === 'Inventory' && <section className="panel full-panel"><div className="panel-heading"><div><h2>Inventory levels</h2><p>Adjust the quantity on hand for each product.</p></div><span className="status-pill">{lowStock} low stock</span></div><div className="inventory-list">{items.map((product) => <div className="inventory-row" key={product.id}><img src={product.image} alt=""/><span className="inventory-name"><b>{product.name}</b><small>{product.size}</small></span><span className={`stock-indicator ${product.stock < 10 ? 'stock-low' : ''}`}><i/>{product.stock < 10 ? 'Low stock' : 'In stock'}</span><div className="stock-controls"><button aria-label={`Decrease ${product.name} stock`} onClick={() => updateItems(items.map((item) => item.id === product.id ? { ...item, stock: Math.max(0, item.stock - 1) } : item))}>−</button><b>{product.stock}</b><button aria-label={`Increase ${product.name} stock`} onClick={() => updateItems(items.map((item) => item.id === product.id ? { ...item, stock: item.stock + 1 } : item))}>＋</button></div></div>)}</div></section>}
-      {section === 'Team' && <section className="panel full-panel"><div className="panel-heading"><div><h2>Cooperative leadership</h2><p>Manage roles and contact details for your team.</p></div><button className="solid-button" onClick={() => setModal('leader')}>＋ Add team leader</button></div><div className="leader-grid">{leaders.map((leader, index) => <article className="leader-card" key={leader.id}><button className="leader-menu" aria-label={`Remove ${leader.name}`} onClick={() => { updateLeaders(leaders.filter((item) => item.id !== leader.id)); setNotice(`${leader.name} removed from the team.`); }}>···</button><span className={`leader-avatar color-${index % 4}`}>{leader.name.split(' ').slice(0, 2).map((word) => word[0]).join('')}</span><h3>{leader.name}</h3><p>{leader.role}</p><span className={`status-pill ${leader.status.toLowerCase()}`}>{leader.status}</span><div className="leader-contact"><a href={`tel:${leader.phone.replaceAll(' ', '')}`}>↗ &nbsp;{leader.phone || 'Add phone'}</a><a href={`mailto:${leader.email}`}>✉ &nbsp;{leader.email || 'Add email'}</a></div></article>)}</div></section>}
-      {section === 'Tasks' && <section className="panel full-panel"><div className="panel-heading"><div><h2>Team task board</h2><p>{completedTasks} of {tasks.length} tasks completed.</p></div><button className="solid-button" onClick={() => setModal('task')}>＋ Add a task</button></div><div className="task-list task-list-full">{tasks.map((task) => <div className={`task-row${task.done ? ' is-done' : ''}`} key={task.id}><input type="checkbox" checked={task.done} onChange={() => toggleTask(task.id)} /><span className="task-copy"><b>{task.title}</b><small>{task.owner} <i>·</i> {task.group}</small></span><span className={`due-pill${task.due === 'Today' && !task.done ? ' due-today' : ''}`}>{task.due}</span><button className="remove-task" aria-label="Delete task" onClick={() => updateTasks(tasks.filter((item) => item.id !== task.id))}>×</button></div>)}</div></section>}
+        {section === 'Inventory' && <section className="panel full-panel"><div className="panel-heading"><div><h2>Inventory levels</h2><p>Adjust the quantity on hand for each product.</p></div><span className="status-pill">{lowStock} low stock</span></div><div className="inventory-list">{items.map((product) => <div className="inventory-row" key={product.id}><img src={product.image} alt=""/><span className="inventory-name"><b>{product.name}</b><small>{product.size}</small></span><span className={`stock-indicator ${product.stock < 10 ? 'stock-low' : ''}`}><i/>{product.stock < 10 ? 'Low stock' : 'In stock'}</span><div className="stock-controls"><button aria-label={`Decrease ${product.name} stock`} onClick={() => void changeStock(product.id, -1)}>−</button><b>{product.stock}</b><button aria-label={`Increase ${product.name} stock`} onClick={() => void changeStock(product.id, 1)}>＋</button></div></div>)}</div></section>}
+      {section === 'Team' && <section className="panel full-panel"><div className="panel-heading"><div><h2>Cooperative leadership</h2><p>Manage roles and contact details for your team.</p></div><button className="solid-button" onClick={() => setModal('leader')}>＋ Add team leader</button></div><div className="leader-grid">{leaders.map((leader, index) => <article className="leader-card" key={leader.id}><button className="leader-menu" aria-label={`Remove ${leader.name}`} onClick={() => void removeLeader(leader.id)}>···</button><span className={`leader-avatar color-${index % 4}`}>{leader.name.split(' ').slice(0, 2).map((word) => word[0]).join('')}</span><h3>{leader.name}</h3><p>{leader.role}</p><span className={`status-pill ${leader.status.toLowerCase()}`}>{leader.status}</span><div className="leader-contact"><a href={`tel:${leader.phone.replace(/ /g, '')}`}>↗ &nbsp;{leader.phone || 'Add phone'}</a><a href={`mailto:${leader.email}`}>✉ &nbsp;{leader.email || 'Add email'}</a></div></article>)}</div></section>}
+      {section === 'Tasks' && <section className="panel full-panel"><div className="panel-heading"><div><h2>Team task board</h2><p>{completedTasks} of {tasks.length} tasks completed.</p></div><button className="solid-button" onClick={() => setModal('task')}>＋ Add a task</button></div><div className="task-list task-list-full">{tasks.map((task) => <div className={`task-row${task.done ? ' is-done' : ''}`} key={task.id}><input type="checkbox" checked={task.done} onChange={() => void toggleTask(task.id)} /><span className="task-copy"><b>{task.title}</b><small>{task.owner} <i>·</i> {task.group}</small></span><span className={`due-pill${task.due === 'Today' && !task.done ? ' due-today' : ''}`}>{task.due}</span><button className="remove-task" aria-label="Delete task" onClick={() => void removeTask(task.id)}>×</button></div>)}</div></section>}
       <footer className="dash-footer"><span>© 2026 KOTWINYA Cooperative</span><a href="/">← Back to storefront</a><span>Made with care in Rwanda <i>✳</i></span></footer>
       </main>
     </div>

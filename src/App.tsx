@@ -5,6 +5,8 @@ import { CHAT_UNAVAILABLE_EVENT, requestLiveChat } from './lib/liveChat';
 import { KOTWINYA_WHATSAPP_GROUP, openLeaderWhatsApp } from './lib/whatsapp';
 import { LanguageProvider, useLanguage } from './i18n';
 import Dashboard from './components/Dashboard';
+import { api } from './lib/api';
+import type { TeamMember } from './lib/api';
 
 function LiveChatNotice({ onClose }: { onClose: () => void }) {
   return (
@@ -122,14 +124,12 @@ function ValuesSection() {
 
 function TeamSection() {
   const { t } = useLanguage();
-  const message = 'Hello KOTWINYA, I would like to speak with cooperative leader Twizerimana Gedeon. Could we arrange a convenient time?';
-  const leaders = [
-    { id: 'alliance', name: 'Umurungi Alliance',phone:"+250798529635",image:"/images/prese.jpeg", role: 'President of the Cooperative', isKnown: true },
-    { id: 'gedeon', name: 'Twizerimana Gedeon', phone:"+250783801966", image:"/images/gedeon.jpeg", role: 'Head of digital market', isKnown: true },
-    { id: 'rukundo', name: 'Mukabutera Rukundo', phone:"+250791143414", image:"/images/conta.jpeg", role: 'Finance Manager', isKnown: true },
-    { id: 'leader-4', name: 'Leader profile to add', phone:"", image:"", role: 'Add leader role and details', isKnown: false },
-    { id: 'leader-5', name: 'Leader profile to add', phone:"", image:"", role: 'Add leader role and details', isKnown: false },
-  ];
+  const [leaders, setLeaders] = useState<TeamMember[]>([
+    { id: 'alliance', name: 'Umurungi Alliance',phone:"+250798529635",email:'alliance@kotwinya.rw',image:"/images/prese.jpeg", role: 'President of the Cooperative', isKnown: true },
+    { id: 'gedeon', name: 'Twizerimana Gedeon', phone:"+250783801966",email:'gedeon@kotwinya.rw', image:"/images/gedeon.jpeg", role: 'Head of digital market', isKnown: true },
+    { id: 'rukundo', name: 'Mukabutera Rukundo', phone:"+250791143414",email:'rukundo@kotwinya.rw', image:"/images/conta.jpeg", role: 'Finance Manager', isKnown: true },
+  ].map((leader) => ({ ...leader, status: 'Active' as const })));
+  useEffect(() => { let active = true; api.team().then((team) => { if (active) setLeaders(team); }).catch(() => { /* Keep the original cooperative contacts available if the API is offline. */ }); return () => { active = false; }; }, []);
   const carouselRef = useRef<HTMLDivElement>(null);
   const scrollLeaders = (direction: -1 | 1) => {
     const carousel = carouselRef.current;
@@ -156,14 +156,14 @@ function TeamSection() {
         <div className="team-grid" id="team-leader-list" ref={carouselRef} role="region" aria-roledescription="carousel" aria-label="Cooperative leaders" tabIndex={0}>
           {leaders.map((leader) => (
             <article className="team-card" key={leader.id}>
-              {leader.isKnown ? <img className="team-avatar" src={leader.image} alt={leader.name} /> : <div className="team-avatar team-avatar-placeholder" aria-hidden="true">+</div>}
+              {leader.id === 'alliance' || leader.id === 'gedeon' || leader.id === 'rukundo' ? <img className="team-avatar" src={leader.id === 'alliance' ? '/images/prese.jpeg' : leader.id === 'gedeon' ? '/images/gedeon.jpeg' : '/images/conta.jpeg'} alt={leader.name} /> : <div className="team-avatar team-avatar-placeholder" aria-hidden="true">{leader.name.split(' ').slice(0, 2).map((word) => word[0]).join('')}</div>}
               <div className="team-info">
                 <span className="team-role">{t('COOPERATIVE LEADER')}</span>
                 <h3>{leader.name}</h3>
                 <p>{t(leader.role)}</p>
-                {leader.isKnown && <div className="flex flex-col gap-2 justify-center items-center">
-                  <button className="button button-dark team-contact" onClick={() => openLeaderWhatsApp(message)}>{t('Chat on WhatsApp')} <span>↗</span></button>
-                  <a className="team-phone" href={`tel:${leader.phone}`}>{leader.phone}</a>
+                {leader.phone && <div className="flex flex-col gap-2 justify-center items-center">
+                  <button className="button button-dark team-contact" onClick={() => openLeaderWhatsApp(`Hello KOTWINYA, I would like to speak with ${leader.name}. Could we arrange a convenient time?`)}>{t('Chat on WhatsApp')} <span>↗</span></button>
+                  <a className="team-phone" href={`tel:${leader.phone.replace(/ /g, '')}`}>{leader.phone}</a>
                 </div>}
               </div>
             </article>
@@ -176,9 +176,16 @@ function TeamSection() {
 
 function ContactSection() {
   const { t } = useLanguage();
-  const submitContact = (event: FormEvent<HTMLFormElement>) => {
+  const [contactStatus, setContactStatus] = useState('');
+  const submitContact = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    try {
+      await api.submitContact({ name: String(data.get('name')), email: String(data.get('email')), message: String(data.get('message')) });
+      setContactStatus('Your message was sent to the KOTWINYA team.');
+    } catch {
+      setContactStatus('The website could not save your message. You can still send it in WhatsApp.');
+    }
     const message = `Hello KOTWINYA, my name is ${data.get('name')} (${data.get('email')}).\n\n${data.get('message')}`;
     openLeaderWhatsApp(message);
   };
@@ -236,6 +243,7 @@ function ContactSection() {
           <button className="button button-primary" type="submit">
             {t('Continue in WhatsApp')} <span>↗</span>
           </button>
+          {contactStatus && <small role="status" className="form-note">{contactStatus}</small>}
           <button className="contact-web-chat" type="button" onClick={() => requestLiveChat('Hello KOTWINYA, I would like help with an order or have a question.')}>
             {t('I don’t use WhatsApp — chat here')}
           </button>

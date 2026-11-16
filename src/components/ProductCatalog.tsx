@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { formatPrice, products, type Product, type ProductCategory } from '../data/products';
+import { api } from '../lib/api';
 import { requestLiveChat } from '../lib/liveChat';
 import { orderProductOnWhatsApp } from '../lib/whatsapp';
 import { useLanguage } from '../i18n';
@@ -48,14 +49,21 @@ export default function ProductCatalog() {
   const { t } = useLanguage();
   const [category, setCategory] = useState<Filter>('all');
   const [search, setSearch] = useState('');
+  const [catalogue, setCatalogue] = useState<Product[]>(products);
+
+  useEffect(() => {
+    let active = true;
+    api.products().then((data) => { if (active) setCatalogue(data); }).catch(() => { /* Keep the bundled catalogue available while the API is offline. */ });
+    return () => { active = false; };
+  }, []);
   const visibleProducts = useMemo(
     () =>
-      products.filter((product) => {
+      catalogue.filter((product) => {
         const matchesCategory = category === 'all' || product.category === category;
         const searchable = `${product.name} ${product.description} ${product.size} ${product.category}`.toLowerCase();
         return matchesCategory && searchable.includes(search.trim().toLowerCase());
       }),
-    [category, search],
+    [catalogue, category, search],
   );
 
   const filters: { label: string; value: Filter }[] = [
